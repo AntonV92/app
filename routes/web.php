@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Payments;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,5 +16,3 @@ use App\Http\Controllers\Payments;
 Route::get('/', function () {
     return view('welcome');
 });
-
-Route::get('/payment/{gateway}', [Payments::class, 'updateStatus']);

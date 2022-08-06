@@ -3,6 +3,7 @@
 
 namespace App\Components;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -12,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 abstract class BaseGateway
 {
     /**
-     * @var array
+     * @var Collection
      */
     protected $payload;
 
@@ -37,9 +38,9 @@ abstract class BaseGateway
     /**
      * @param array $payload
      */
-    protected function setPayload(array $payload)
+    public function setPayload(array $payload)
     {
-        $this->payload = $payload;
+        $this->payload = collect($payload);
     }
 
     /**
@@ -54,7 +55,7 @@ abstract class BaseGateway
         }
 
         $paymentsCount = DB::table('payments')
-            ->where('gateway_name', $this->getGatewayName())
+            ->where('gateway_name', static::getGatewayName())
             ->whereBetween('created_at', [date('Y-m-d 00:00'), date('Y-m-d 23:59')])
             ->count();
 
