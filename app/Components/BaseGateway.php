@@ -15,7 +15,12 @@ abstract class BaseGateway
     /**
      * @var Collection
      */
-    protected $payload;
+    protected Collection $payload;
+
+    /**
+     * @var string
+     */
+    protected string $authorizationToken;
 
     /**
      * @return mixed
@@ -25,7 +30,18 @@ abstract class BaseGateway
     /**
      * @return string
      */
-    abstract public static function getGatewayName(): string;
+    public static function getGatewayName(): string
+    {
+        return static::NAME;
+    }
+
+    /**
+     * @param string $token
+     */
+    public function setAuthorizationToken(string $token)
+    {
+        $this->authorizationToken = $token;
+    }
 
     /**
      * @return int

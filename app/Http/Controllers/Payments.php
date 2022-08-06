@@ -21,6 +21,10 @@ class Payments extends Controller
         $gateway = (new GatewayFactory($gateway))->getGateway();
         $gateway->setPayload($request->post());
 
+        if (!is_null($request->header('Authorization'))) {
+            $gateway->setAuthorizationToken($request->header('Authorization'));
+        }
+
         return $gateway->processing();
     }
 

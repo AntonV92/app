@@ -41,6 +41,7 @@ class GatewayFactory
     {
         return collect([
             FirstGateway::getGatewayName() => FirstGateway::class,
+            SecondGateway::getGatewayName() => SecondGateway::class,
         ]);
     }
 

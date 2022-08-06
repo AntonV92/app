@@ -6,39 +6,28 @@ namespace App\Components;
 use App\Models\Payment;
 
 /**
- * Class FirstGateway
+ * Class SecondGateway
  * @package App\Components
  */
-class FirstGateway extends BaseGateway
+class SecondGateway extends BaseGateway
 {
-    protected const NAME = 'first_gateway';
+    public const NAME = 'second_gateway';
 
-    private const MERCHANT_KEY = 'KaTf5tZYHx4v7pgZ';
-    private const MERCHANT_ID = 6;
+    public const APP_ID = 816;
+    public const APP_KEY = 'rTaasVHeteGbhwBx';
 
-    /**
-     * @return int
-     */
-    public function getPaymentsLimit(): int
-    {
-        return parent::getPaymentsLimit();
-    }
 
-    /**
-     * @return array
-     */
-    public function processing(): array
+    public function processing()
     {
         $payload = $this->payload;
 
         if (!$payload->has([
-            'merchant_id',
-            'payment_id',
+            'project',
+            'invoice',
             'status',
             'amount',
             'amount_paid',
-            'timestamp',
-            'sign'
+            'rand'
         ])) {
             return [
                 'status' => false,
@@ -46,10 +35,10 @@ class FirstGateway extends BaseGateway
             ];
         }
 
-        if ($payload->get('sign') != $this->prepareSign()) {
+        if ($this->authorizationToken != $this->prepareSign()) {
             return [
                 'status' => false,
-                'message' => 'Wrong signature'
+                'message' => 'Wrong signature',
             ];
         }
 
@@ -60,8 +49,8 @@ class FirstGateway extends BaseGateway
             ];
         }
 
-        $payment = Payment::where('merchant_id', $payload->get('merchant_id'))
-            ->where('merchant_pid', $payload->get('payment_id'))
+        $payment = Payment::where('merchant_id', $payload->get('project'))
+            ->where('merchant_pid', $payload->get('invoice'))
             ->where('gateway_name', self::getGatewayName())
             ->firstOrFail();
 
@@ -92,9 +81,9 @@ class FirstGateway extends BaseGateway
      */
     private function prepareSign(): string
     {
-        $signString = $this->payload->forget('sign')->sortKeys()->values()->join(':') . self::MERCHANT_KEY;
+        $signString = $this->payload->sortKeys()->values()->join('.') . self::APP_KEY;
 
-        return hash('sha256', $signString);
+        return hash('md5', $signString);
     }
 
 }
