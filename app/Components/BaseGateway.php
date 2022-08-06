@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\DB;
 abstract class BaseGateway
 {
     /**
+     * @var array
+     */
+    protected $payload;
+
+    /**
      * @return mixed
      */
     abstract public function processing();
@@ -19,7 +24,7 @@ abstract class BaseGateway
     /**
      * @return string
      */
-    abstract public function getGatewayName(): string;
+    abstract public static function getGatewayName(): string;
 
     /**
      * @return int
@@ -27,6 +32,14 @@ abstract class BaseGateway
     protected function getPaymentsLimit(): int
     {
         return 0;
+    }
+
+    /**
+     * @param array $payload
+     */
+    protected function setPayload(array $payload)
+    {
+        $this->payload = $payload;
     }
 
     /**
