@@ -40,24 +40,15 @@ class FirstGateway extends BaseGateway
             'timestamp',
             'sign'
         ])) {
-            return [
-                'status' => false,
-                'message' => 'Wrong request'
-            ];
+            return self::ERRORS['request'];
         }
 
         if ($payload->get('sign') != $this->prepareSign()) {
-            return [
-                'status' => false,
-                'message' => 'Wrong signature'
-            ];
+            return self::ERRORS['signature'];
         }
 
         if (!$this->checkPaymentsLimit()) {
-            return [
-                'status' => false,
-                'message' => 'Payments limit error'
-            ];
+            return self::ERRORS['payments_limit'];
         }
 
         $payment = Payment::where('merchant_id', $payload->get('merchant_id'))
@@ -66,19 +57,13 @@ class FirstGateway extends BaseGateway
             ->firstOrFail();
 
         if ($payment->amount_cents != $payload->get('amount')) {
-            return [
-                'status' => false,
-                'message' => 'Wrong payment amount'
-            ];
+            return self::ERRORS['amount'];
         }
 
         $payment->status = $payload->get('status');
 
         if (!$payment->save()) {
-            return [
-                'status' => false,
-                'message' => 'Update payment status error'
-            ];
+            return static::ERRORS['update_status'];
         }
 
         return [

@@ -16,8 +16,10 @@ class SecondGateway extends BaseGateway
     public const APP_ID = 816;
     public const APP_KEY = 'rTaasVHeteGbhwBx';
 
-
-    public function processing()
+    /**
+     * @return bool[]
+     */
+    public function processing(): array
     {
         $payload = $this->payload;
 
@@ -29,24 +31,15 @@ class SecondGateway extends BaseGateway
             'amount_paid',
             'rand'
         ])) {
-            return [
-                'status' => false,
-                'message' => 'Wrong request'
-            ];
+            return self::ERRORS['request'];
         }
 
         if ($this->authorizationToken != $this->prepareSign()) {
-            return [
-                'status' => false,
-                'message' => 'Wrong signature',
-            ];
+            return self::ERRORS['signature'];
         }
 
         if (!$this->checkPaymentsLimit()) {
-            return [
-                'status' => false,
-                'message' => 'Payments limit error'
-            ];
+            return self::ERRORS['payments_limit'];
         }
 
         $payment = Payment::where('merchant_id', $payload->get('project'))
@@ -55,19 +48,13 @@ class SecondGateway extends BaseGateway
             ->firstOrFail();
 
         if ($payment->amount_cents != $payload->get('amount')) {
-            return [
-                'status' => false,
-                'message' => 'Wrong payment amount'
-            ];
+            return self::ERRORS['amount'];
         }
 
         $payment->status = $payload->get('status');
 
         if (!$payment->save()) {
-            return [
-                'status' => false,
-                'message' => 'Update payment status error'
-            ];
+            return self::ERRORS['update_status'];
         }
 
         return [

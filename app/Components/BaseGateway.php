@@ -12,6 +12,29 @@ use Illuminate\Support\Facades\DB;
  */
 abstract class BaseGateway
 {
+    protected const ERRORS = [
+        'amount' => [
+            'status' => false,
+            'message' => 'Wrong payment amount'
+        ],
+        'payments_limit' => [
+            'status' => false,
+            'message' => 'Payments limit error'
+        ],
+        'update_status' => [
+            'status' => false,
+            'message' => 'Update payment status error'
+        ],
+        'signature' => [
+            'status' => false,
+            'message' => 'Wrong signature'
+        ],
+        'request' => [
+            'status' => false,
+            'message' => 'Wrong request'
+        ],
+    ];
+
     /**
      * @var Collection
      */
@@ -75,7 +98,7 @@ abstract class BaseGateway
             ->whereBetween('created_at', [date('Y-m-d 00:00'), date('Y-m-d 23:59')])
             ->count();
 
-        if ($paymentsCount >= $this->getPaymentsLimit()) {
+        if ($paymentsCount >= $paymentsLimit) {
             return false;
         }
 
